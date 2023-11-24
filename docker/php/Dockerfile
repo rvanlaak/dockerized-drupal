@@ -4,15 +4,25 @@ WORKDIR /app
 
 RUN set -xe \
     && apk add openssl-dev --no-cache --update --virtual .phpize-deps $PHPIZE_DEPS \
-    && apk add pcre pcre-dev gcc make libc-dev libpng-dev \
+    && apk add pcre pcre-dev gcc make libc-dev \
     && rm -rf /usr/share/php \
     && rm -rf /tmp/* \
     && apk del .phpize-deps
 
-RUN apk add --no-cache oniguruma-dev zip libzip-dev
-RUN docker-php-ext-configure zip
-RUN docker-php-ext-install pdo pdo_mysql mysqli opcache mbstring gd pcntl zip \
-    && docker-php-ext-enable opcache zip
+RUN apk add --no-cache oniguruma-dev zip libzip-dev && \
+    docker-php-ext-configure zip && \
+    docker-php-ext-install zip && \
+    docker-php-ext-enable zip
+
+RUN docker-php-ext-install pdo pdo_mysql mysqli opcache mbstring pcntl \
+    && docker-php-ext-enable opcache
+
+RUN apk add --no-cache $PHPIZE_DEPS \
+        freetype-dev \
+        libjpeg-turbo-dev \
+        libpng-dev && \
+    docker-php-ext-configure gd --with-jpeg --with-webp --with-freetype; \
+    docker-php-ext-install -j$(nproc) gd
 
 # this might be increased for larger size project
 # https://www.scalingphpbook.com/blog/2014/02/14/best-zend-opcache-settings.html

@@ -1,5 +1,7 @@
 FROM php:8.2-fpm-alpine as app
 
+WORKDIR /app
+
 RUN set -xe \
     && apk add openssl-dev --no-cache --update --virtual .phpize-deps $PHPIZE_DEPS \
     && apk add pcre pcre-dev gcc make libc-dev libpng-dev \

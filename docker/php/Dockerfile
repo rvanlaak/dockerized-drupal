@@ -40,3 +40,7 @@ RUN { \
 FROM app as dev
 
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+
+RUN apk add --update linux-headers \
+    && pecl install xdebug \
+    && docker-php-ext-enable xdebug \
